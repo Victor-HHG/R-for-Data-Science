@@ -4,18 +4,96 @@ date: "`r format(Sys.Date())`"
 output: github_document
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+Ejercicios del capítulo **3 Data visualisation** en [este sitio](https://r4ds.had.co.nz/data-visualisation.html).
 
 ```{r}
-plot(cars)
+# Para instalar paquetes si no se tienen ya instalados, descomentar la siguiente línea
+#install.packages("tidyverse")
+
+# Carga del paquete
+library(tidyverse)
 ```
 
+El primer ejercicio usa un dataframe pre-cargado
 
+```{r}
+mpg
+```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+Creación de un gráfico de dispersión
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+Estas son las dimensiones del data frame. Primero filas y luego columnas
+```{r}
+dim(mpg)
+```
+
+Este es un scatterplot de las millas por galón, contra el número de cilindros. Muestra una correlación negativa entre el número de cilindros y la eficiencia del motor.
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = hwy, y = cyl))
+```
+
+Este es un scatterplot del tipo de vehículo, contra el tipo de tracción. No es muy útil porque ambas variables son categóricas.
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = class, y = drv))
+```
+
+Se pueden variar los *aesthetics* de una gráfica cambiando las propiedades dentro de *aes*. En este ejemplo se asigna al color de los puntos.
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+Se puede asignar la variable a el tamaño de los puntos
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```
+
+Se puede asignar a la transparencia de los puntos:
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+```
+
+También se puede asignar a la forma de los puntos. Sin embargo, el máximo de categorías para las formas es 6, por lo que en este ejemplo, la última categoría no tiene forma.
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+
+Cuando se cambian los aesthetics dentro de aes, se hace usando una variable como referencia. Pero si se quiere cambiar el color de toda la gráfica, se puede hacer fuera del aes, dentro de las propiedades del geom
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+Para segmentar los gráficos en múltiples gráficos a partir de una variable categórica, se utiliza la función de *facet_wrap* como una capa adicional a la gráfica. En este ejemplo, el primer argumento dentro del facet es una *fórmula*, lo cual es un tipo de estructura de datos en R.
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ class, nrow = 2)
+```
+
+Se puede lograr un resultado similar con la función *facet_grid*. Incluso, se pueden ordenar las gráficas en función de una variable, de modo que la misma posición de las gráficas es una especie de scatterplot.
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ cyl)
+```
+
